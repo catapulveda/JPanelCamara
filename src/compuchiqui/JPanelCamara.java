@@ -177,22 +177,22 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void dropActionChanged(DropTargetDragEvent dtde) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void dragExit(DropTargetEvent dte) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
