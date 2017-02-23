@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -295,7 +296,15 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     }
     
     public byte[] getBytes(){
-        return ((DataBufferByte) getImagen().getData().getDataBuffer()).getData();
+        try {
+            ByteArrayOutputStream os =  new  ByteArrayOutputStream ();
+            ImageIO.write(getImagen(),  "jpg" , os);
+            os.flush();
+            return os.toByteArray();
+        } catch (IOException ex) {
+            Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public void setImagen(BufferedImage imagen) {
