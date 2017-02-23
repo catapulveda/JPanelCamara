@@ -231,6 +231,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                 }else{
                     System.load(Metodos.loadLibraryFromJar("/opencv/x86/opencv_java300.dll"));                
                 }
+                
                 ((JFrame) SwingUtilities.getWindowAncestor(this)).addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -240,9 +241,11 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                 LIBRARY_LOAD = true;
                 System.out.println("Librerias OpenCV Cargadas...");
             }            
-        }catch(Exception e){
+        }catch(NullPointerException e){
             Metodos.ERROR(e, "NO SE PUDO CARGAR LAS LIBRERIAS.");
             LIBRARY_LOAD = false;
+        }catch(java.lang.ClassCastException e){
+            
         }
     }
     
