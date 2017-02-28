@@ -13,8 +13,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +71,10 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     JCheckBoxMenuItem menuDetectarRostro;
     JMenuItem menuGuardarImagen;
     
+    private int x1 = 0, x2 = 0;
+    private int y1 = 0, y2 = 0;
+    private double zoom=1;
+    
     public JPanelCamara(){
         this.menuDetectarRostro = new JCheckBoxMenuItem("Detectar rostro");
         menuGuardarImagen = new JMenuItem("Guardar imagen", new ImageIcon(this.getClass().getResource("/imagenes/guardar.png")));
@@ -103,12 +109,12 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
             }
         });            
         
-        this.addMouseListener(this);        
+        this.addMouseListener(this);
     }
     
     @Override
     public void paint(Graphics g){
-        if(imagen != null){
+        if(imagen != null){           
             g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
             setOpaque(false);
         }else{
@@ -152,7 +158,11 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
 
     @Override
     public void mousePressed(MouseEvent e){
-        
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            x1 = (int) e.getPoint().getX();
+            y1 = (int) e.getPoint().getY();
+        }
+        repaint();
     }
 
     @Override
@@ -336,6 +346,6 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         caras = new MatOfRect();
         cascada = new CascadeClassifier(Metodos.loadLibraryFromJar("/opencv/cascada.xml"));
         this.DETECT_FACE = DETECT_FACE;        
-    }
+    }    
     
 }
