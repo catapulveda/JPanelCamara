@@ -5,6 +5,7 @@ import java.awt.Desktop;
 import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -13,9 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -110,6 +108,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         });            
         
         this.addMouseListener(this);
+        this.setDropTarget(new DropTarget(this, this));
     }
     
     @Override
@@ -311,8 +310,10 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     public byte[] getBytes(){
         try {
             ByteArrayOutputStream os =  new  ByteArrayOutputStream ();
-            ImageIO.write(getImagen(),  "jpg" , os);
-            os.flush();
+            if(imagen!=null){                
+                ImageIO.write(getImagen(),  "jpg" , os);
+                os.flush();
+            }            
             return os.toByteArray();
         } catch (IOException ex) {
             Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
