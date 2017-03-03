@@ -167,7 +167,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         g.dispose();
         
         
-        System.err.println("newW = "+newW+"\tnewH = "+newH+"\t w = "+w+"\t h = "+h+"\t X = "+X+"\t Y = "+Y);
+//        System.err.println("newW = "+newW+"\tnewH = "+newH+"\t w = "+w+"\t h = "+h+"\t X = "+X+"\t Y = "+Y);
         return bufim;
     }
 
