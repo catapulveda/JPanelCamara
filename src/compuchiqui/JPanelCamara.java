@@ -4,6 +4,7 @@ import com.github.sarxos.webcam.Webcam;
 import java.awt.Desktop;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -17,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -376,6 +378,16 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         this.imagen = imagen;
         this.imagen_temp = imagen;
         repaint();
+    }
+    
+    public void setImagen(byte[] imagenBytes) {
+        try {
+            this.imagen = ImageIO.read(new ByteArrayInputStream(imagenBytes));
+            this.imagen_temp = imagen;
+            repaint();
+        } catch (IOException ex){
+            Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public BufferedImage getImagen() {
