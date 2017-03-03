@@ -385,6 +385,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
             if(imagenBytes!=null){
                 this.imagen = ImageIO.read(new ByteArrayInputStream(imagenBytes));
                 this.imagen_temp = imagen;
+                ARRASTRANDO = true;
                 repaint();
             }            
         } catch (IOException ex){
