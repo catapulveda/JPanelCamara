@@ -69,7 +69,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     private boolean CAM_ACTIVA = false;//DETERMINA SI LA CAMARA ESTA ACTIVADA.
     private boolean DETECT_FACE = false;//DETERMINA SI HAY QUE DETECTAR ROSTRO.
     private boolean LIBRARY_LOAD = false;//DETERMINA QUE LAS LIBRERIAS HAN SIDO CARGADAS.
-    private boolean ARRASTRANDO = false;//DETRMINA SI LA IMAGEN PROVIENE DE LA CAMARA O ES UN ARCHIVO ARRASTRADO.
+    private boolean AJUSTAR = false;//DETRMINA SI LA IMAGEN PROVIENE DE LA CAMARA O ES UN ARCHIVO ARRASTRADO.
     //Ancho máximo
     private int MAX_WIDTH = 0;
     //Alto máximo
@@ -123,7 +123,9 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     @Override
     public void paint(Graphics g){        
         if(imagen_temp != null){
-            if(ARRASTRANDO){
+            if(AJUSTAR){
+                MAX_WIDTH = this.getWidth();
+                MAX_HEIGHT = this.getHeight();
                 int heigt = 0, width = 0;
                 if(imagen_temp.getHeight()>imagen_temp.getWidth()){                
                      heigt = (imagen_temp.getHeight() * MAX_WIDTH) / imagen_temp.getWidth();                
@@ -148,7 +150,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                 }
                 g.drawImage(imagen_temp, X, Y, imagen_temp.getWidth(), imagen_temp.getHeight(), this);
             }else{
-                g.drawImage(imagen, 0, 0, this.getWidth(), this.getHeight(), this);
+                g.drawImage(imagen_temp, 0, 0, this.getWidth(), this.getHeight(), this);
             }
             setOpaque(false);
         }else{
@@ -260,9 +262,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
                     List<File> lista = (List<File>)dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     if(lista.size()==1){
-                        ARRASTRANDO = true;
-                        MAX_WIDTH = this.getWidth();
-                        MAX_HEIGHT = this.getHeight();
+                        AJUSTAR = true;                        
                         setImagen(ImageIO.read(new File(lista.get(0).getAbsolutePath())));
                         setBorder(javax.swing.BorderFactory.createEtchedBorder());
                     }else if(lista.size()>1){
@@ -323,7 +323,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                 try {
                     if(video.open(IDCAMARA)){
                         System.out.println("Camara iniciada...");
-                        ARRASTRANDO = false;                        
+                        AJUSTAR = false;                        
                         CAM_ACTIVA = true;
                         while(video.read(imagenMat)){
                             if(DETECT_FACE){
@@ -384,8 +384,8 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         try {
             if(imagenBytes!=null){
                 this.imagen = ImageIO.read(new ByteArrayInputStream(imagenBytes));
-                this.imagen_temp = imagen;
-                ARRASTRANDO = true;
+                this.imagen_temp = ImageIO.read(new ByteArrayInputStream(imagenBytes));
+                AJUSTAR = true;
                 repaint();
             }            
         } catch (IOException ex){
