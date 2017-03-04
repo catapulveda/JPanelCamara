@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -177,7 +178,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
 
     @Override
     public void mouseClicked(MouseEvent e){
-        if(!CAM_ACTIVA && SwingUtilities.isLeftMouseButton(e)){
+        if(!CAM_ACTIVA && SwingUtilities.isRightMouseButton(e)){
             menu.removeAll();
             menu.add(menuDetectarRostro);
             menu.add(menuGuardarImagen);
@@ -200,6 +201,16 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
             menu.show(this, e.getPoint().x, e.getPoint().y);
         }
 
+        if(e.getClickCount()==2 && SwingUtilities.isLeftMouseButton(e)){
+            try {
+                File archivo = new File("temp.jpg");
+                ImageIO.write(imagen, "jpg", archivo);
+                Desktop.getDesktop().open(archivo);
+            } catch (Exception ex) {
+                Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         if(CAM_ACTIVA && SwingUtilities.isLeftMouseButton(e)){
             cerrarCamara();
             if(DETECT_FACE){
