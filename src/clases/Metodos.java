@@ -1,4 +1,4 @@
-package compuchiqui;
+package clases;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;

@@ -1,5 +1,7 @@
 package compuchiqui;
 
+import clases.Metodos;
+import clases.WebCamInfo;
 import com.github.sarxos.webcam.Webcam;
 import java.awt.Desktop;
 import java.awt.Graphics;
