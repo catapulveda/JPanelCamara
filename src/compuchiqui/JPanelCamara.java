@@ -5,9 +5,8 @@ import clases.WebCamInfo;
 import com.github.sarxos.webcam.Webcam;
 import java.awt.Desktop;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -30,9 +29,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,8 +54,8 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
 
     private Thread t;
     
-    private BufferedImage imagen;
-    private BufferedImage imagen_temp;
+    Image imgOrig;
+    Image img;
     
     private VideoCapture video; 
     private Mat imagenMat;
@@ -72,7 +69,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     private boolean CAM_ACTIVA = false;//DETERMINA SI LA CAMARA ESTA ACTIVADA.
     private boolean DETECT_FACE = false;//DETERMINA SI HAY QUE DETECTAR ROSTRO.
     private boolean LIBRARY_LOAD = false;//DETERMINA QUE LAS LIBRERIAS HAN SIDO CARGADAS.
-    private boolean AJUSTAR = false;//DETRMINA SI LA IMAGEN PROVIENE DE LA CAMARA O ES UN ARCHIVO ARRASTRADO.
+//    private boolean AJUSTAR = false;//DETRMINA SI LA IMAGEN PROVIENE DE LA CAMARA O ES UN ARCHIVO ARRASTRADO.
     //Ancho máximo
     private int MAX_WIDTH = 0;
     //Alto máximo
@@ -92,29 +89,23 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         menu.add(menuDetectarRostro);
         menu.add(menuGuardarImagen);
         
-        menuDetectarRostro.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setDETECT_FACE(menuDetectarRostro.isSelected());
-            }
+        menuDetectarRostro.addActionListener((ActionEvent e) -> {
+            setDETECT_FACE(menuDetectarRostro.isSelected());
         });
         
-        menuGuardarImagen.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                JFileChooser chooser = new JFileChooser();
-                chooser.setDialogTitle("Guardar imagen como...");
-                chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-                chooser.showSaveDialog(menuGuardarImagen);
-                File archivo = chooser.getSelectedFile();
-                if(archivo!=null){
-                    try {
-                        archivo = new File(archivo.getAbsolutePath()+".jpg");
-                        ImageIO.write(imagen, "jpg", archivo);
-                        Desktop.getDesktop().open(archivo);
-                    }catch(IOException ex){
-                        Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+        menuGuardarImagen.addActionListener((ActionEvent e) -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Guardar imagen como...");
+            chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+            chooser.showSaveDialog(menuGuardarImagen);
+            File archivo = chooser.getSelectedFile();
+            if(archivo!=null){
+                try {
+                    archivo = new File(archivo.getAbsolutePath()+".jpg");
+                    ImageIO.write(Metodos.imageToBufferedImage(imgOrig), "jpg", archivo);
+                    Desktop.getDesktop().open(archivo);
+                }catch(IOException ex){
+                    Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -124,58 +115,16 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     }
     
     @Override
-    public void paint(Graphics g){        
-        if(imagen_temp != null){
-            if(AJUSTAR){
-                MAX_WIDTH = this.getWidth();
-                MAX_HEIGHT = this.getHeight();
-                int heigt = 0, width = 0;
-                if(imagen_temp.getHeight()>imagen_temp.getWidth()){                
-                     heigt = (imagen_temp.getHeight() * MAX_WIDTH) / imagen_temp.getWidth();                
-                    imagen_temp = resize(imagen_temp, MAX_WIDTH, heigt);
-                     width = (imagen_temp.getWidth() * MAX_HEIGHT) / imagen_temp.getHeight();
-                    imagen_temp = resize(imagen_temp, width, MAX_HEIGHT);
-                }else{
-                     width = (imagen_temp.getWidth() * MAX_HEIGHT) / imagen_temp.getHeight();
-                    imagen_temp = resize(imagen_temp, width, MAX_HEIGHT);
-                     heigt = (imagen_temp.getHeight() * MAX_WIDTH) / imagen_temp.getWidth();
-                    imagen_temp = resize(imagen_temp, MAX_WIDTH, heigt);
-                }
-                if(imagen_temp.getWidth()<this.getWidth()){
-                    X = (this.getWidth()/2)-(imagen_temp.getWidth()/2);
-                }else{
-                    X = 0;
-                }
-                if(imagen_temp.getHeight()<this.getHeight()){
-                    Y = (this.getHeight()/2)-(imagen_temp.getHeight()/2);
-                }else{
-                    Y = 0;
-                }
-                g.drawImage(imagen_temp, X, Y, imagen_temp.getWidth(), imagen_temp.getHeight(), this);
-            }else{
-                g.drawImage(imagen_temp, 0, 0, this.getWidth(), this.getHeight(), this);
-            }
-            setOpaque(false);
-        }else{
-            setOpaque(true);
-        }
-        repaint();
-        super.paint(g);
-        
-    }
-    
-    public BufferedImage resize(BufferedImage bufferedImage, int newW, int newH){
-        int w = bufferedImage.getWidth();
-        int h = bufferedImage.getHeight();
-        BufferedImage bufim = new BufferedImage(newW, newH, bufferedImage.getType());
-        Graphics2D g = bufim.createGraphics();
-//        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);        
-        g.drawImage(bufferedImage, 0, 0, newW, newH, 0, 0, w, h, null);
-        g.dispose();
-        
-        
-//        System.err.println("newW = "+newW+"\tnewH = "+newH+"\t w = "+w+"\t h = "+h+"\t X = "+X+"\t Y = "+Y);
-        return bufim;
+    public void paintComponent(Graphics g){
+        super.paintComponent(g); 
+        if(imgOrig!=null){
+            int h = (getHeight()>getWidth())?(imgOrig.getHeight(null) * getWidth()) / imgOrig.getWidth(null):getHeight();
+            int w = (getHeight()>getWidth())?getWidth():(imgOrig.getWidth(null) * getHeight()) / imgOrig.getHeight(null);
+
+            int x = (w<getWidth())?(getWidth()/2)-(w/2):0;
+            int y = (h<getHeight())?(getHeight()/2)-(h/2):0;
+            g.drawImage(imgOrig, x, y, w, h, null); 
+        }    
     }
 
     @Override
@@ -206,7 +155,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         if(e.getClickCount()==2 && SwingUtilities.isLeftMouseButton(e)){
             try {
                 File archivo = new File("temp.jpg");
-                ImageIO.write(imagen, "jpg", archivo);
+                ImageIO.write(Metodos.imageToBufferedImage(imgOrig), "jpg", archivo);
                 Desktop.getDesktop().open(archivo);
             } catch (Exception ex) {
                 Logger.getLogger(JPanelCamara.class.getName()).log(Level.SEVERE, null, ex);
@@ -274,8 +223,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                 if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
                     List<File> lista = (List<File>)dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    if(lista.size()==1){
-                        AJUSTAR = true;                        
+                    if(lista.size()==1){                        
                         setImagen(ImageIO.read(new File(lista.get(0).getAbsolutePath())));
                         setBorder(javax.swing.BorderFactory.createEtchedBorder());
                     }else if(lista.size()>1){
@@ -303,17 +251,17 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                     System.load(Metodos.loadLibraryFromJar("/opencv/x86/opencv_java300.dll"));                
                 }
                 
-                ((JFrame) SwingUtilities.getWindowAncestor(this)).addWindowListener(new java.awt.event.WindowAdapter() {
+                ((Window) SwingUtilities.getWindowAncestor(this)).addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent evt) {
-                        cerrarCamara();
+                        video.release();
                     }
                 });
                 LIBRARY_LOAD = true;
                 System.out.println("Librerias OpenCV Cargadas...");
             }            
         }catch(NullPointerException e){
-            Metodos.ERROR(e, "NO SE PUDO CARGAR LAS LIBRERIAS.");
+            Metodos.ERROR(e, "NO SE PUDO CARGAR LAS LIBRERIAS DE LA CAMARA.");
             LIBRARY_LOAD = false;
         }catch(java.lang.ClassCastException e){
             
@@ -335,8 +283,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
             public void run(){
                 try {
                     if(video.open(IDCAMARA)){
-                        System.out.println("Camara iniciada...");
-                        AJUSTAR = false;                        
+                        System.out.println("Camara iniciada...");                    
                         CAM_ACTIVA = true;
                         while(video.read(imagenMat)){
                             if(DETECT_FACE){
@@ -366,17 +313,18 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     }
     
     public void cerrarCamara(){
+        System.out.println("METODO cerrarCamara()");
         if(video != null && video.isOpened()){
-            t.stop();
-            video.release();
+            t.stop();            
             CAM_ACTIVA = false;
+            System.out.println("CAMARA CERRADA");
         }
     }
     
     public byte[] getBytes(){
         try {
             ByteArrayOutputStream os =  new  ByteArrayOutputStream ();
-            if(imagen!=null){                
+            if(imgOrig!=null){                
                 ImageIO.write(getImagen(),  "jpg" , os);
                 os.flush();
             }            
@@ -387,18 +335,15 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         return null;
     }
 
-    public void setImagen(BufferedImage imagen) {        
-        this.imagen = imagen;
-        this.imagen_temp = imagen;
+    public void setImagen(BufferedImage imagen){        
+        this.imgOrig = imagen;
         repaint();
     }
     
     public void setImagen(byte[] imagenBytes) {
         try {
             if(imagenBytes!=null){
-                this.imagen = ImageIO.read(new ByteArrayInputStream(imagenBytes));
-                this.imagen_temp = ImageIO.read(new ByteArrayInputStream(imagenBytes));
-                AJUSTAR = true;
+                this.imgOrig = ImageIO.read(new ByteArrayInputStream(imagenBytes));
                 repaint();
             }            
         } catch (IOException ex){
@@ -407,7 +352,7 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     }
 
     public BufferedImage getImagen() {
-        return imagen;
+        return (BufferedImage) imgOrig;
     }
 
     public int getIDCAMARA() {

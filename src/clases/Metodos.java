@@ -1,5 +1,7 @@
 package clases;
 
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
@@ -137,6 +139,15 @@ public class Metodos {
         }
         
         return temp.getAbsolutePath();
-    }    
+    }
+    
+    public static BufferedImage imageToBufferedImage(Image img){
+        BufferedImage bufferedImage = new BufferedImage(img.getWidth(null), img.getHeight(null),
+        BufferedImage.TYPE_INT_RGB);
+        Graphics g = bufferedImage.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();    
+        return bufferedImage;
+    }
     
 }
