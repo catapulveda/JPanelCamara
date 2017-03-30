@@ -5,9 +5,11 @@ import clases.WebCamInfo;
 import com.github.sarxos.webcam.Webcam;
 import java.awt.Desktop;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -233,8 +235,8 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
                     JOptionPane.showMessageDialog(null, "ÉSTE TIPO DE ARCHIVO NO ES SOPORTADO.");
                 }
             }
-        } catch (Exception e) {
-
+        } catch (UnsupportedFlavorException | IOException | HeadlessException e) {
+            clases.Metodos.ERROR(e, "OCURRIO UN ERROR INESPERADO.\nINTENTE NUEVAMENTE.");
         }
     }
     

@@ -44,7 +44,7 @@ public class Metodos {
     }
     
     public static void M(String m, String i) {
-        JOptionPane.showMessageDialog(null, m, "Aviso", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(Metodos.class.getClass().getResource("/Imagenes/"+i)));
+        JOptionPane.showMessageDialog(null, m, "Aviso", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(Metodos.class.getClass().getResource("/recursos/images/"+i)));
     }
     
     public static void ERROR(Exception e, String mensaje){
