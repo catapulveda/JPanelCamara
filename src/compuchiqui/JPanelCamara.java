@@ -337,7 +337,12 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
         return null;
     }
 
-    public void setImagen(BufferedImage imagen){        
+    public void setImagen(BufferedImage imagen){
+        this.imgOrig = imagen;
+        repaint();
+    }
+    
+    public void setImagen(Image imagen){
         this.imgOrig = imagen;
         repaint();
     }
