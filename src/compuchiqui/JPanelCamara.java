@@ -317,7 +317,8 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     public void cerrarCamara(){
         System.out.println("METODO cerrarCamara()");
         if(video != null && video.isOpened()){
-            t.stop();            
+            t.stop();
+            video.release();
             CAM_ACTIVA = false;
             System.out.println("CAMARA CERRADA");
         }
