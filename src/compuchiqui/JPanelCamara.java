@@ -119,21 +119,32 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g); 
-        if(imgOrig!=null){
-            int h;
-            int w;            
+                
+        if(imgOrig!=null){            
+            int h = 0;
+            int w = 0;            
             if(getHeight()>getWidth()){
+                System.out.println("EL ALTO DEL PANEL ES MAYOR AL ANCHO DEL PANEL");
                 h = (imgOrig.getHeight(null) * getWidth()) / imgOrig.getWidth(null);
                 w = getWidth();
-            }else{
+            }else if(getWidth()>=getHeight()){
+                System.out.println("EL ALTO DEL PANEL NO ES MAYOR AL ANCHO DEL PANEL");
                 w = (imgOrig.getWidth(null) * getHeight()) / imgOrig.getHeight(null);                
                 h = getHeight();                            
+            }
+            if(getWidth()>getHeight()){
+                System.out.println("EL ANCHO ES MAYOR AL ALTO");
+                w = getWidth();
+                h = (imgOrig.getHeight(null) * getWidth()) / imgOrig.getWidth(null);
             }
 
             int x = (w<getWidth())?(getWidth()/2)-(w/2):0;
             int y = (h<getHeight())?(getHeight()/2)-(h/2):0;
             g.drawImage(imgOrig, x, y, w, h, null); 
-        }    
+            g.drawString("w: "+w+" h: "+h, 50, 10);
+            g.drawString("Ancho: "+imgOrig.getWidth(null)+" Alto: "+imgOrig.getHeight(null), 50, 20);
+        }
+        g.drawString("Ancho Panel: "+getWidth()+" Alto Panel: "+getHeight(), 50, 30);
     }
 
     @Override
