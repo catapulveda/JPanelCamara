@@ -120,8 +120,15 @@ public class JPanelCamara extends JPanel implements MouseListener, DropTargetLis
     public void paintComponent(Graphics g){
         super.paintComponent(g); 
         if(imgOrig!=null){
-            int h = (getHeight()>getWidth())?(imgOrig.getHeight(null) * getWidth()) / imgOrig.getWidth(null):getHeight();
-            int w = (getHeight()>getWidth())?getWidth():(imgOrig.getWidth(null) * getHeight()) / imgOrig.getHeight(null);
+            int h;
+            int w;            
+            if(getHeight()>getWidth()){
+                h = (imgOrig.getHeight(null) * getWidth()) / imgOrig.getWidth(null);
+                w = getWidth();
+            }else{
+                w = (imgOrig.getWidth(null) * getHeight()) / imgOrig.getHeight(null);                
+                h = getHeight();                            
+            }
 
             int x = (w<getWidth())?(getWidth()/2)-(w/2):0;
             int y = (h<getHeight())?(getHeight()/2)-(h/2):0;
